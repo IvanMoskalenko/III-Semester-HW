@@ -1,12 +1,10 @@
-﻿using System;
-
-namespace Matrix_Library
+﻿namespace Matrix_Library
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Generator.GenerateAndPrintMatrices("/home/ivan/Documents/test2", 100, 10, 10, 0.9);
         }
     }
 }
