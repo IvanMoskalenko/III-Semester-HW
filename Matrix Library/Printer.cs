@@ -4,7 +4,7 @@ namespace Matrix_Library
 {
     public static class Printer
     {
-        public static void PrintMatrix(string path, int[,] array)
+        public static void PrintMatrix(string path, long[,] array)
         {
             var x = array.GetLength(0);
             var y = array.GetLength(1);

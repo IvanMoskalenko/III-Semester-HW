@@ -3,12 +3,12 @@ using System.IO;
 
 namespace Matrix_Library
 {
-    public class Generator
+    public static class Generator
     {
-        public static int[,] GenerateMatrix (int rows, int cols, double sparsity)
+        public static long[,] GenerateMatrix(int rows, int cols, double sparsity)
         {
             var rand = new Random();
-            var output = new int[rows, cols];
+            var output = new long[rows, cols];
             for (var j = 0; j < rows; j++)
             {
                 for (var k = 0; k < cols; k++)
