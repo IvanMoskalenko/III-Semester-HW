@@ -10,7 +10,7 @@ namespace Matrix_Library
             //Generator.GenerateAndPrintMatrices("/home/ivan/Documents/test2", 100, 10, 10, 0.9);
             var matrixA = Generator.GenerateMatrix(1000, 1000, 0.8);
             var matrixB = Generator.GenerateMatrix(1000, 1000, 0.8);
-            Stopwatch stopwatch = new Stopwatch();
+            var stopwatch = new Stopwatch();
             stopwatch.Start();
             var result = Multiplication.SingleThreaded(matrixA, matrixB);
             stopwatch.Stop();
