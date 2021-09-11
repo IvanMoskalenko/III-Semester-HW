@@ -26,15 +26,5 @@ namespace Matrix_Library
             }
             return output;
         }
-        
-        public static void GenerateAndPrintMatrices(string path, int amount, int rows, int cols, double sparsity)
-        {
-            for (var i = 0; i < amount; i++)
-            {
-                var matrix = GenerateMatrix(rows, cols, sparsity);
-                var pathToWrite = Path.Combine(path, "Matrix" + i + ".txt");
-                Printer.PrintMatrix(pathToWrite, matrix);
-            }
-        }
     }
 }
