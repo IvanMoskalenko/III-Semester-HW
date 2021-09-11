@@ -7,6 +7,7 @@ namespace Matrix_Library
     {
         public static long[,] GenerateMatrix(int rows, int cols, double sparsity)
         {
+            if (rows == 0 | cols == 0) throw new Exception("Invalid matrix sizes");
             var rand = new Random();
             var output = new long[rows, cols];
             for (var j = 0; j < rows; j++)

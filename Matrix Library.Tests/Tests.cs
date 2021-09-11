@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using NUnit.Framework;
 
 namespace Matrix_Library.Tests
@@ -32,13 +33,13 @@ namespace Matrix_Library.Tests
             Assert.AreEqual(rightResult3, resultMultiThreaded3);
             Assert.AreEqual(rightResult3, resultSingleThreaded3);
         }
-
+    
         [Test]
         public void RandomizedMultiplicationTest()
         {
+            var rand = new Random();
             for (var i = 0; i < 100; i++)
             {
-                var rand = new Random();
                 var rows1 = rand.Next(1, 20);
                 var cols1AndRows1 = rand.Next(1, 20);
                 var cols2 = rand.Next(1, 20);
@@ -57,6 +58,22 @@ namespace Matrix_Library.Tests
             var matrixB = new long[1, 5];
             Assert.Throws<Exception> (() => Multiplication.SingleThreaded(matrixA, matrixB));
             Assert.Throws<Exception> (() => Multiplication.MultiThreaded(matrixA, matrixB));
+        }
+        
+        [Test]
+        public void WriteReadTest()
+        {
+            var rand = new Random();
+            for (var i = 0; i < 100; i++)
+            {
+                var rows = rand.Next(1, 100);
+                var cols = rand.Next(1, 100);
+                var matrix = Generator.GenerateMatrix(rows, cols, 0.5);
+                var path = Path.GetTempPath() + Guid.NewGuid() + ".txt";
+                RiderPrinter.PrintMatrix(path, matrix);
+                var readMatrix = RiderPrinter.ReadMatrix(path);
+                Assert.AreEqual(matrix, readMatrix);
+            }
         }
     }
 }
