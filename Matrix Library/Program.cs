@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 
 namespace Matrix_Library
 {
@@ -7,28 +10,104 @@ namespace Matrix_Library
     {
         static void Main(string[] args)
         {
-            //Generator.GenerateAndPrintMatrices("/home/ivan/Documents/test2", 100, 10, 10, 0.9);
-            // var matrixA = Generator.GenerateMatrix(1000, 1000, 0.8);
-            // var matrixB = Generator.GenerateMatrix(1000, 1000, 0.8);
-            // var stopwatch = new Stopwatch();
-            // stopwatch.Start();
-            // var result = Multiplication.SingleThreaded(matrixA, matrixB);
-            // stopwatch.Stop();
-            // Console.WriteLine("ms: " + stopwatch.ElapsedMilliseconds);
-            // stopwatch.Restart();
-            // var result2 = Multiplication.MultiThreaded(matrixA, matrixB);
-            // stopwatch.Stop();
-            // Console.WriteLine("ms: " + stopwatch.ElapsedMilliseconds);
-            // Printer.PrintMatrix("/home/ivan/Documents/test2/matrixA.txt", matrixA);
-            // Printer.PrintMatrix("/home/ivan/Documents/test2/matrixB.txt", matrixB);
-            // Printer.PrintMatrix("/home/ivan/Documents/test2/result.txt", result);
-            // Printer.PrintMatrix("/home/ivan/Documents/test2/result2.txt", result2);
+            if (args.GetLength(0) != 3)
+            {
+                Console.WriteLine("Wrong number of arguments.");
+                return;
+            }
+            
+            long[,] firstMatrix;
+            long[,] secondMatrix;
+            try
+            {
+                firstMatrix = RiderPrinter.Read(args[0]);
+                secondMatrix = RiderPrinter.Read(args[1]);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                Console.WriteLine("Empty file.");
+                return;
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Wrong format.");
+                return;
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Invalid path.");
+                return;
+            }
 
-            var matrixA = Generator.GenerateMatrix(2, 2, 0.5);
-            //var matrixB = Generator.GenerateMatrix(2, 2, 0.5);
-            RiderPrinter.PrintMatrix("/home/ivan/Documents/test2/matrixA.txt", matrixA);
-            var matrixC = RiderPrinter.ReadMatrix("/home/ivan/Documents/test2/matrixA.txt");
-            RiderPrinter.PrintMatrix("/home/ivan/Documents/test2/matrixC.txt", matrixC);
+            long[,] result;
+            try
+            {
+                result = Multiplication.MultiThreaded(firstMatrix, secondMatrix);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Invalid matrices sizes.");
+                return;
+            }
+
+            try
+            {
+                RiderPrinter.Print(args[2], result);
+            }
+            catch (FileNotFoundException)
+            {
+                Console.WriteLine("Invalid path.");
+                return;
+            }
+            
+            
+            static void TestFunc(int iterations, int size) // Func for performance test.
+            {
+                var resultsSingleThreaded = new List<long>();
+                var resultsMultiThreaded = new List<long>();
+                var timer = new Stopwatch();
+                for (var i = 0; i < iterations; i++)
+                {
+                    var rand = new Random();
+                    var matrixA = Generator.GenerateMatrix(size, size, rand.NextDouble());
+                    var matrixB = Generator.GenerateMatrix(size, size, rand.NextDouble());
+
+                    timer.Restart();
+                    Multiplication.SingleThreaded(matrixA, matrixB);
+                    timer.Stop();
+                    resultsSingleThreaded.Add(timer.ElapsedMilliseconds);
+
+                    timer.Restart();
+                    Multiplication.MultiThreaded(matrixA, matrixB);
+                    timer.Stop();
+                    resultsMultiThreaded.Add(timer.ElapsedMilliseconds);
+                }
+
+                var averageSingleThreaded = resultsSingleThreaded.Average();
+                var averageMultiThreaded = resultsMultiThreaded.Average();
+                Console.WriteLine("Average time for single-threaded: " + averageSingleThreaded + " ms");
+                Console.WriteLine("Average time for multi-threaded: " + averageMultiThreaded + " ms");
+            }
+
+            TestFunc(10, 128);
+            TestFunc(10, 256);
+            TestFunc(10, 512);
+            TestFunc(10, 1024);
+            
+            /*
+            Была создана тестовая функция, которая заданное количество раз создаёт пары случайных матриц и перемножает их.
+            В итоге вычисляется среднее время выполнения среди всех итераций.
+            Были проведены тесты для квадратных матриц размерами 128, 256, 512, 1024. Количество итераций - 10.
+            Результаты: 
+            128x128:    single-threaded: 17.1 ms
+                        multi-threaded: 8.4 ms
+            256x256:    single-threaded: 154.2 ms
+                        multi-threaded: 49.2 ms
+            512x512:    single-threaded: 1286.3 ms
+                        multi-threaded: 200.4 ms
+            1024x1024:  single-threaded: 38358.8 ms
+                        multi-threaded: 4300.8 ms                                                                   
+            */
         }
     }
 }

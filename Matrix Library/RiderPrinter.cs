@@ -5,7 +5,13 @@ namespace Matrix_Library
 {
     public static class RiderPrinter
     {
-        public static void PrintMatrix(string path, long[,] array)
+        /// <summary>
+        /// Prints matrix to specified file.
+        /// </summary>
+        /// <param name="path">Path to file.</param>
+        /// <param name="array">Matrix to print.</param>
+        /// <exception cref="FileNotFoundException">invalid path.</exception>
+        public static void Print(string path, long[,] array)
         {
             var x = array.GetLength(0);
             var y = array.GetLength(1);
@@ -16,12 +22,22 @@ namespace Matrix_Library
                 {
                     text = text + array[i, j] + " ";
                 }
+
                 text = text.TrimEnd() + "\n";
             }
+
             File.WriteAllText(path, text);
         }
-        
-        public static long[,] ReadMatrix(string path)
+
+        /// <summary>
+        /// Reads matrix from specified file.
+        /// </summary>
+        /// <param name="path">Path to file.</param>
+        /// <returns>long[,] - read matrix.</returns>
+        /// <exception cref="IndexOutOfRangeException">empty file.</exception>
+        /// <exception cref="FormatException">invalid matrix format.</exception>
+        /// <exception cref="FileNotFoundException">invalid path.</exception>
+        public static long[,] Read(string path)
         {
             var fileLines = File.ReadAllLines(path);
             var matrix = new long[fileLines.Length, fileLines[0].Split(' ').Length];
@@ -34,6 +50,7 @@ namespace Matrix_Library
                     matrix[i, j] = Convert.ToInt64(split[j]);
                 }
             }
+
             return matrix;
         }
     }

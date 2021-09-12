@@ -5,6 +5,13 @@ namespace Matrix_Library
 {
     public static class Multiplication
     {
+        /// <summary>
+        /// Single-threaded realisation of matrix multiplication.
+        /// </summary>
+        /// <param name="matrixA">First matrix to multiply.</param>
+        /// <param name="matrixB">Second matrix to multiply.</param>
+        /// <returns>long[,] - multiplication product.</returns>
+        /// <exception cref="Exception">cols of first matrix not equal to rows of second matrix.</exception>
         public static long[,] SingleThreaded(long[,] matrixA, long[,] matrixB)
         {
             var rows1 = matrixA.GetLength(0);
@@ -13,19 +20,27 @@ namespace Matrix_Library
             var cols2 = matrixB.GetLength(1);
             if (cols1 != rows2) throw new Exception("Invalid matrices sizes");
             var result = new long[rows1, cols2];
-            for (var i = 0; i < rows1; i++)
+            for (var row = 0; row < rows1; row++)
             {
-                for (var k = 0; k < cols2; k++)
+                for (var col = 0; col < cols2; col++)
                 {
-                    for (var r = 0; r < cols1; r++)
+                    for (var i = 0; i < cols1; i++)
                     {
-                        result[i, k] += matrixA[i, r] * matrixB[r, k];
+                        result[row, col] += matrixA[row, i] * matrixB[i, col];
                     }
                 }
             }
+
             return result;
         }
         
+        /// <summary>
+        /// Multi-threaded realisation of matrix multiplication.
+        /// </summary>
+        /// <param name="matrixA">First matrix to multiply.</param>
+        /// <param name="matrixB">Second matrix to multiply.</param>
+        /// <returns>long[,] - multiplication product.</returns>
+        /// <exception cref="Exception">cols of first matrix not equal to rows of second matrix.</exception>
         public static long[,] MultiThreaded(long[,] matrixA, long[,] matrixB)
         {
             var rows1 = matrixA.GetLength(0);
@@ -41,18 +56,19 @@ namespace Matrix_Library
                 var local = i;
                 threads[i] = new Thread(() =>
                 {
-                    for (var z= local * chunkSize; z < Math.Min((local + 1) * chunkSize, rows1); z++)
+                    for (var row = local * chunkSize; row < Math.Min((local + 1) * chunkSize, rows1); row++)
                     {
-                        for (var k = 0; k < cols2; k++)
+                        for (var col = 0; col < cols2; col++)
                         {
-                            for (var r = 0; r < cols1; r++)
+                            for (var j = 0; j < cols1; j++)
                             {
-                                result[z, k] += matrixA[z, r] * matrixB[r, k];
+                                result[row, col] += matrixA[row, j] * matrixB[j, col];
                             }
                         }
                     }
                 });
             }
+
             foreach (var thread in threads)
                 thread.Start();
             foreach (var thread in threads)
