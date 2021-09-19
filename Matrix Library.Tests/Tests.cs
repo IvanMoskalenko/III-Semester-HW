@@ -82,8 +82,8 @@ namespace MatrixLibrary.Tests
         {
             var matrixA = new long[1, 5];
             var matrixB = new long[1, 5];
-            Assert.Throws<Exception>(() => Multiplication.SingleThreaded(matrixA, matrixB));
-            Assert.Throws<Exception>(() => Multiplication.MultiThreaded(matrixA, matrixB));
+            Assert.Throws<ArgumentException>(() => Multiplication.SingleThreaded(matrixA, matrixB));
+            Assert.Throws<ArgumentException>(() => Multiplication.MultiThreaded(matrixA, matrixB));
         }
 
         [Test]
@@ -105,10 +105,10 @@ namespace MatrixLibrary.Tests
         [Test]
         public void GeneratorExceptionTest()
         {
-            Assert.Throws<Exception>(() => Generator.GenerateMatrix(0, 5, 0.5));
-            Assert.Throws<Exception>(() => Generator.GenerateMatrix(1, -1, 0.5));
-            Assert.Throws<Exception>(() => Generator.GenerateMatrix(1, 5, 1.5));
-            Assert.Throws<Exception>(() => Generator.GenerateMatrix(1, 5, -1.5));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Generator.GenerateMatrix(0, 5, 0.5));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Generator.GenerateMatrix(1, -1, 0.5));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Generator.GenerateMatrix(1, 5, 1.5));
+            Assert.Throws<ArgumentOutOfRangeException>(() => Generator.GenerateMatrix(1, 5, -1.5));
         }
     }
 }
