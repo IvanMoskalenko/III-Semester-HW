@@ -1,7 +1,10 @@
 using System;
 
-namespace Matrix_Library
+namespace MatrixLibrary
 {
+    /// <summary>
+    /// Implementing matrix generator
+    /// </summary>
     public static class Generator
     {
         /// <summary>
@@ -11,12 +14,24 @@ namespace Matrix_Library
         /// <param name="cols">Numbers of cols in generated matrix.</param>
         /// <param name="sparsity">Sparsity of matrix.</param>
         /// <returns>long[,]</returns>
-        /// <exception cref="Exception">rows or cols below 1.</exception>
-        /// <exception cref="Exception">sparsity below 0.0 or above 1.0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">rows below 1.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">cols below 1.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">sparsity below 0.0 or above 1.0.</exception>
         public static long[,] GenerateMatrix(int rows, int cols, double sparsity)
         {
-            if (rows <= 0 | cols <= 0) throw new Exception("Invalid matrix sizes");
-            if (sparsity < 0.0 | sparsity > 1.0) throw new Exception("Invalid sparsity");
+            if (rows <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(rows),"Invalid number of rows");
+            }
+            if (cols <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(cols),"Invalid number of cols");
+            }
+            if (sparsity is < 0.0 or > 1.0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sparsity),"Invalid sparsity");
+            }
+
             var rand = new Random();
             var output = new long[rows, cols];
             for (var j = 0; j < rows; j++)

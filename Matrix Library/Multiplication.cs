@@ -1,8 +1,11 @@
 using System;
 using System.Threading;
 
-namespace Matrix_Library
+namespace MatrixLibrary
 {
+    /// <summary>
+    /// Implementing matrix multiplication
+    /// </summary>
     public static class Multiplication
     {
         /// <summary>
@@ -11,14 +14,17 @@ namespace Matrix_Library
         /// <param name="matrixA">First matrix to multiply.</param>
         /// <param name="matrixB">Second matrix to multiply.</param>
         /// <returns>long[,] - multiplication product.</returns>
-        /// <exception cref="Exception">cols of first matrix not equal to rows of second matrix.</exception>
+        /// <exception cref="ArgumentException">cols of first matrix not equal to rows of second matrix.</exception>
         public static long[,] SingleThreaded(long[,] matrixA, long[,] matrixB)
         {
             var rows1 = matrixA.GetLength(0);
             var cols1 = matrixA.GetLength(1);
             var rows2 = matrixB.GetLength(0);
             var cols2 = matrixB.GetLength(1);
-            if (cols1 != rows2) throw new Exception("Invalid matrices sizes");
+            if (cols1 != rows2)
+            {
+                throw new ArgumentException("Invalid matrices sizes");
+            }
             var result = new long[rows1, cols2];
             for (var row = 0; row < rows1; row++)
             {
@@ -40,14 +46,17 @@ namespace Matrix_Library
         /// <param name="matrixA">First matrix to multiply.</param>
         /// <param name="matrixB">Second matrix to multiply.</param>
         /// <returns>long[,] - multiplication product.</returns>
-        /// <exception cref="Exception">cols of first matrix not equal to rows of second matrix.</exception>
+        /// <exception cref="ArgumentException">cols of first matrix not equal to rows of second matrix.</exception>
         public static long[,] MultiThreaded(long[,] matrixA, long[,] matrixB)
         {
             var rows1 = matrixA.GetLength(0);
             var cols1 = matrixA.GetLength(1);
             var rows2 = matrixB.GetLength(0);
             var cols2 = matrixB.GetLength(1);
-            if (cols1 != rows2) throw new Exception("Invalid matrices sizes");
+            if (cols1 != rows2) 
+            {
+                throw new ArgumentException("Invalid matrices sizes");
+            }
             var threads = new Thread[Math.Min(Environment.ProcessorCount, rows1)];
             var chunkSize = rows1 / threads.Length + 1;
             var result = new long[rows1, cols2];
@@ -70,9 +79,13 @@ namespace Matrix_Library
             }
 
             foreach (var thread in threads)
+            {
                 thread.Start();
+            }
             foreach (var thread in threads)
+            {
                 thread.Join();
+            }
             return result;
         }
     }

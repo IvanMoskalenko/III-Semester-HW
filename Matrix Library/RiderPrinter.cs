@@ -1,8 +1,11 @@
 using System;
 using System.IO;
 
-namespace Matrix_Library
+namespace MatrixLibrary
 {
+    /// <summary>
+    /// Implementing read and print from file for matrices
+    /// </summary>
     public static class RiderPrinter
     {
         /// <summary>

@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Matrix_Library
+namespace MatrixLibrary
 {
     static class Program
     {
         static void Main(string[] args)
         {
-            if (args.GetLength(0) != 3)
+            if (args.Length != 3)
             {
                 Console.WriteLine("Wrong number of arguments.");
                 return;
@@ -44,7 +44,7 @@ namespace Matrix_Library
             {
                 result = Multiplication.MultiThreaded(firstMatrix, secondMatrix);
             }
-            catch (Exception)
+            catch (ArgumentException)
             {
                 Console.WriteLine("Invalid matrices sizes.");
                 return;
@@ -61,7 +61,7 @@ namespace Matrix_Library
             }
             
             
-            static void TestFunc(int iterations, int size) // Func for performance test.
+            static void TestFunc(int iterations, int size) // Method for performance test.
             {
                 var resultsSingleThreaded = new List<long>();
                 var resultsMultiThreaded = new List<long>();
@@ -82,17 +82,30 @@ namespace Matrix_Library
                     timer.Stop();
                     resultsMultiThreaded.Add(timer.ElapsedMilliseconds);
                 }
+                
+                static (double, double) FindAverageAndStandardDeviation(IReadOnlyCollection<long> results)
+                {
+                    var average = results.Average();
+                    var variance = results.Select(x => 
+                        Math.Pow(x - average, 2)).Average();
+                    var standardDeviation = Math.Sqrt(variance);
+                    return (average, standardDeviation);
+                }
 
-                var averageSingleThreaded = resultsSingleThreaded.Average();
-                var averageMultiThreaded = resultsMultiThreaded.Average();
+                var (averageSingleThreaded, standardDeviationSingleThreaded) = 
+                    FindAverageAndStandardDeviation(resultsSingleThreaded);
+                var (averageMultiThreaded, standardDeviationMultiThreaded) =
+                    FindAverageAndStandardDeviation(resultsMultiThreaded);
                 Console.WriteLine("Average time for single-threaded: " + averageSingleThreaded + " ms");
+                Console.WriteLine("Standard deviation for single-threaded: " + standardDeviationSingleThreaded + " ms");
                 Console.WriteLine("Average time for multi-threaded: " + averageMultiThreaded + " ms");
+                Console.WriteLine("Standard deviation for multi-threaded: " + standardDeviationMultiThreaded + " ms");
             }
 
-            TestFunc(10, 128);
-            TestFunc(10, 256);
-            TestFunc(10, 512);
-            TestFunc(10, 1024);
+            TestFunc(50, 128);
+            TestFunc(50, 256);
+            TestFunc(50, 512);
+            TestFunc(50, 1024);
             
             /*
             Была создана тестовая функция, которая заданное количество раз создаёт пары случайных матриц и перемножает их.

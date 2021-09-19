@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net5.0</TargetFramework>
-        <RootNamespace>Matrix_Library</RootNamespace>
+        <RootNamespace>MatrixLibrary</RootNamespace>
     </PropertyGroup>
 
 </Project>
