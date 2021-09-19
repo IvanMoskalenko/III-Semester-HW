@@ -21,15 +21,17 @@ namespace MatrixLibrary
         {
             if (rows <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(rows),"Invalid number of rows");
+                throw new ArgumentOutOfRangeException(nameof(rows), "Invalid number of rows");
             }
+
             if (cols <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(cols),"Invalid number of cols");
+                throw new ArgumentOutOfRangeException(nameof(cols), "Invalid number of cols");
             }
+
             if (sparsity is < 0.0 or > 1.0)
             {
-                throw new ArgumentOutOfRangeException(nameof(sparsity),"Invalid sparsity");
+                throw new ArgumentOutOfRangeException(nameof(sparsity), "Invalid sparsity");
             }
 
             var rand = new Random();

@@ -9,25 +9,43 @@ namespace MatrixLibrary.Tests
         [Test]
         public void MultiplicationTest()
         {
-            var matrix1 = new long[,] {{1, 2}, 
-                                       {3, 4}};
-            var matrix2 = new long[,] {{5, 2}, 
-                                       {5, 4}};
-            var rightResult1 = new long[,] {{15, 10}, 
-                                            {35, 22}};
+            var matrix1 = new long[,]
+            {
+                {1, 2},
+                {3, 4}
+            };
+            var matrix2 = new long[,]
+            {
+                {5, 2},
+                {5, 4}
+            };
+            var rightResult1 = new long[,]
+            {
+                {15, 10},
+                {35, 22}
+            };
             var resultMultiThreaded1 = Multiplication.MultiThreaded(matrix1, matrix2);
             var resultSingleThreaded1 = Multiplication.SingleThreaded(matrix1, matrix2);
             Assert.AreEqual(rightResult1, resultMultiThreaded1);
             Assert.AreEqual(rightResult1, resultSingleThreaded1);
 
-            var matrix3 = new long[,] {{1, 2}, 
-                                       {3, 4}, 
-                                       {6, 9}};
-            var matrix4 = new long[,] {{5, 2, 7}, 
-                                       {5, 4, 9}};
-            var rightResult2 = new long[,] {{15, 10, 25}, 
-                                            {35, 22, 57}, 
-                                            {75, 48, 123}};
+            var matrix3 = new long[,]
+            {
+                {1, 2},
+                {3, 4},
+                {6, 9}
+            };
+            var matrix4 = new long[,]
+            {
+                {5, 2, 7},
+                {5, 4, 9}
+            };
+            var rightResult2 = new long[,]
+            {
+                {15, 10, 25},
+                {35, 22, 57},
+                {75, 48, 123}
+            };
             var resultMultiThreaded2 = Multiplication.MultiThreaded(matrix3, matrix4);
             var resultSingleThreaded2 = Multiplication.SingleThreaded(matrix3, matrix4);
             Assert.AreEqual(rightResult2, resultMultiThreaded2);
@@ -41,7 +59,7 @@ namespace MatrixLibrary.Tests
             Assert.AreEqual(rightResult3, resultMultiThreaded3);
             Assert.AreEqual(rightResult3, resultSingleThreaded3);
         }
-        
+
         [Test]
         public void RandomizedMultiplicationTest()
         {

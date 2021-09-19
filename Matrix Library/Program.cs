@@ -15,7 +15,7 @@ namespace MatrixLibrary
                 Console.WriteLine("Wrong number of arguments.");
                 return;
             }
-            
+
             long[,] firstMatrix;
             long[,] secondMatrix;
             try
@@ -59,8 +59,8 @@ namespace MatrixLibrary
                 Console.WriteLine("Invalid path.");
                 return;
             }
-            
-            
+
+
             static void TestFunc(int iterations, int size) // Method for performance test.
             {
                 var resultsSingleThreaded = new List<long>();
@@ -82,17 +82,17 @@ namespace MatrixLibrary
                     timer.Stop();
                     resultsMultiThreaded.Add(timer.ElapsedMilliseconds);
                 }
-                
+
                 static (double, double) FindAverageAndStandardDeviation(IReadOnlyCollection<long> results)
                 {
                     var average = results.Average();
-                    var variance = results.Select(x => 
+                    var variance = results.Select(x =>
                         Math.Pow(x - average, 2)).Average();
                     var standardDeviation = Math.Sqrt(variance);
                     return (average, standardDeviation);
                 }
 
-                var (averageSingleThreaded, standardDeviationSingleThreaded) = 
+                var (averageSingleThreaded, standardDeviationSingleThreaded) =
                     FindAverageAndStandardDeviation(resultsSingleThreaded);
                 var (averageMultiThreaded, standardDeviationMultiThreaded) =
                     FindAverageAndStandardDeviation(resultsMultiThreaded);
@@ -106,7 +106,7 @@ namespace MatrixLibrary
             TestFunc(50, 256);
             TestFunc(50, 512);
             TestFunc(50, 1024);
-            
+
             /*
             Была создана тестовая функция, которая заданное количество раз создаёт пары случайных матриц и перемножает их.
             В итоге вычисляется среднее время выполнения среди всех итераций.

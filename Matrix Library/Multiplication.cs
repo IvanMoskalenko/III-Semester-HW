@@ -25,6 +25,7 @@ namespace MatrixLibrary
             {
                 throw new ArgumentException("Invalid matrices sizes");
             }
+
             var result = new long[rows1, cols2];
             for (var row = 0; row < rows1; row++)
             {
@@ -39,7 +40,7 @@ namespace MatrixLibrary
 
             return result;
         }
-        
+
         /// <summary>
         /// Multi-threaded realisation of matrix multiplication.
         /// </summary>
@@ -53,10 +54,11 @@ namespace MatrixLibrary
             var cols1 = matrixA.GetLength(1);
             var rows2 = matrixB.GetLength(0);
             var cols2 = matrixB.GetLength(1);
-            if (cols1 != rows2) 
+            if (cols1 != rows2)
             {
                 throw new ArgumentException("Invalid matrices sizes");
             }
+
             var threads = new Thread[Math.Min(Environment.ProcessorCount, rows1)];
             var chunkSize = rows1 / threads.Length + 1;
             var result = new long[rows1, cols2];
@@ -82,10 +84,12 @@ namespace MatrixLibrary
             {
                 thread.Start();
             }
+
             foreach (var thread in threads)
             {
                 thread.Join();
             }
+
             return result;
         }
     }
