@@ -109,17 +109,17 @@ namespace MatrixLibrary
 
             /*
             Была создана тестовая функция, которая заданное количество раз создаёт пары случайных матриц и перемножает их.
-            В итоге вычисляется среднее время выполнения среди всех итераций.
-            Были проведены тесты для квадратных матриц размерами 128, 256, 512, 1024. Количество итераций - 10.
+            В итоге вычисляется среднее время выполнения среди всех итераций и среднеквадратичное отклонение.
+            Были проведены тесты для квадратных матриц размерами 128, 256, 512, 1024. Количество итераций - 50.
             Результаты: 
-            128x128:    single-threaded: 17.1 ms
-                        multi-threaded: 8.4 ms
-            256x256:    single-threaded: 154.2 ms
-                        multi-threaded: 49.2 ms
-            512x512:    single-threaded: 1286.3 ms
-                        multi-threaded: 200.4 ms
-            1024x1024:  single-threaded: 38358.8 ms
-                        multi-threaded: 4300.8 ms                                                                   
+            128x128:    single-threaded: 17.56 ms, standard deviation: 3.47655001402252 ms
+                        multi-threaded: 8.88 ms, standard deviation: 1.2905812643921342 ms
+            256x256:    single-threaded: 149.7 ms, standard deviation: 13.35702062587312 ms
+                        multi-threaded: 50.92 ms, standard deviation: 4.894241514269602 ms
+            512x512:    single-threaded: 1263.08 ms, standard deviation: 60.091210671777944 ms
+                        multi-threaded: 207.6 ms, standard deviation: 5.528109984434101 ms
+            1024x1024:  single-threaded: 26303.52 ms, standard deviation: 659.4704008520777 ms
+                        multi-threaded: 3138.02 ms, standard deviation: 313.6486244191101 ms                                                                   
             */
         }
     }
