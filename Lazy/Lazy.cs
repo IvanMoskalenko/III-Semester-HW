@@ -9,9 +9,7 @@ namespace Lazy
         private T _result;
         public Lazy(Func<T> supplier)
         {
-            _isComputed = false;
             _supplier = supplier;
-            _result = default;
         }
         public T Get()
         {
