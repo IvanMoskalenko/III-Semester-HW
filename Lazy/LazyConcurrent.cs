@@ -6,16 +6,16 @@ namespace Lazy
     public class LazyConcurrent<T> : ILazy<T>
     {
         private readonly object _lockObject = new();
-        private bool _isComputed;
+        private volatile bool _isComputed;
         private Func<T> _supplier;
         private T _result;
         public LazyConcurrent(Func<T> supplier)
         {
-            Volatile.Write(ref _supplier, supplier);
+            _supplier = supplier;
         }
         public T Get()
         {
-            if (Volatile.Read (ref _isComputed))
+            if (_isComputed)
             {
                 return _result;
             }
