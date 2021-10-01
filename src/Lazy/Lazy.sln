@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lazy", "Lazy\Lazy.csproj", "{FC04E893-8AE9-4E16-B9B2-1CF01B71FFC2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lazy.Tests", "Lazy.Tests\Lazy.Tests.csproj", "{3326B3D9-1F1D-40EA-B5D6-CCE3C523327D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FC04E893-8AE9-4E16-B9B2-1CF01B71FFC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC04E893-8AE9-4E16-B9B2-1CF01B71FFC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC04E893-8AE9-4E16-B9B2-1CF01B71FFC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC04E893-8AE9-4E16-B9B2-1CF01B71FFC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3326B3D9-1F1D-40EA-B5D6-CCE3C523327D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3326B3D9-1F1D-40EA-B5D6-CCE3C523327D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3326B3D9-1F1D-40EA-B5D6-CCE3C523327D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3326B3D9-1F1D-40EA-B5D6-CCE3C523327D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
