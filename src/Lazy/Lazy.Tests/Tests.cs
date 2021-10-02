@@ -32,8 +32,13 @@ namespace Lazy.Tests
 
         [TestCaseSource(nameof(Lazies))]
         public void LazyAndConcurrentLazyShouldReturnTheSameObjectOnSingleCalls<T>(object item, ILazy<T> lazy)
+            => Assert.AreEqual(item, lazy.Get());
+
+        [Test]
+        public void LazyAndConcurrentLazyShouldThrowExceptionWhenSupplierIsNull()
         {
-            Assert.AreEqual(item, lazy.Get());
+            Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazy<object>(null));
+            Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazyConcurrent<object>(null));
         }
 
         [Test]
@@ -57,14 +62,6 @@ namespace Lazy.Tests
                 Assert.AreEqual(1, result.Get());
             }
         }
-
-        [Test]
-        public static void LazyShouldThrowExceptionWhenSupplierIsNull()
-            => Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazy<int>(null));
-
-        [Test]
-        public static void ConcurrentLazyShouldThrowExceptionWhenSupplierIsNull()
-            => Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazyConcurrent<int>(null));
 
         [Test]
         public static void ConcurrentLazyShouldNotAllowRaces()
