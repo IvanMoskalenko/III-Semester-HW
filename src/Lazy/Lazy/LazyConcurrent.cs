@@ -10,22 +10,18 @@ namespace Lazy
     {
         private readonly object _lockObject = new();
         private volatile bool _isComputed;
-        private readonly Func<T> _supplier;
+        private Func<T> _supplier;
         private T _result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LazyConcurrent{T}"/> class.
         /// </summary>
         /// <param name="supplier">Function to calculate.</param>
+        /// <exception cref="ArgumentNullException">supplier function is null.</exception>
         public LazyConcurrent(Func<T> supplier)
-        {
-            _supplier = supplier;
-        }
+            => _supplier = supplier ?? throw new ArgumentNullException(nameof(supplier));
 
-        /// <summary>
-        /// Allows to calculate and return the value or return previously calculated one.
-        /// </summary>
-        /// <returns>Computation result.</returns>
+        /// <inheritdoc/>
         public T Get()
         {
             if (_isComputed)
@@ -41,6 +37,7 @@ namespace Lazy
                 }
 
                 _result = _supplier();
+                _supplier = null;
                 _isComputed = true;
             }
 

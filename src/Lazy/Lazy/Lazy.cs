@@ -9,22 +9,18 @@ namespace Lazy
     public class Lazy<T> : ILazy<T>
     {
         private bool _isComputed;
-        private readonly Func<T> _supplier;
+        private Func<T> _supplier;
         private T _result;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Lazy{T}"/> class.
         /// </summary>
         /// <param name="supplier">Function to calculate.</param>
-        public Lazy(Func<T> supplier)
-        {
-            _supplier = supplier;
-        }
+        /// <exception cref="ArgumentNullException">supplier function is null.</exception>
+        public Lazy(Func<T> supplier) 
+            => _supplier = supplier ?? throw new ArgumentNullException(nameof(supplier));
 
-        /// <summary>
-        /// Allows to calculate and return the value or return previously calculated one.
-        /// </summary>
-        /// <returns>Computation result.</returns>
+        /// <inheritdoc/>
         public T Get()
         {
             if (_isComputed)
@@ -33,6 +29,7 @@ namespace Lazy
             }
 
             _result = _supplier();
+            _supplier = null;
             _isComputed = true;
             return _result;
         }

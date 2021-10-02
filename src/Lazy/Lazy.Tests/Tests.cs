@@ -1,33 +1,46 @@
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using NUnit.Framework;
 
 namespace Lazy.Tests
 {
-    public static class Tests
+    public class Tests
     {
-        [Test]
-        public static void SimpleLazy()
+        private static readonly object[] TestData =
         {
-            var stringResult = LazyFactory<string>.CreateLazy(() => "Ibr?");
-            Assert.AreEqual("Ibr?", stringResult.Get());
-            var intResult = LazyFactory<int>.CreateLazy(() => 228);
-            Assert.AreEqual(228, intResult.Get());
+            228,
+            1337,
+            "Ibr?",
+            "AF",
+            "Kurdi",
+            'a',
+            23L
+        };
+
+        private static List<TestCaseData> Lazies()
+        {
+            var testCaseData = new List<TestCaseData>();
+            foreach (var item in TestData)
+            {
+                testCaseData.Add(new TestCaseData(item, LazyFactory.CreateLazy(() => item)));
+                testCaseData.Add(new TestCaseData(item, LazyFactory.CreateLazyConcurrent(() => item)));
+            }
+
+            return testCaseData;
+        }
+
+        [TestCaseSource(nameof(Lazies))]
+        public void LazyAndConcurrentLazyShouldReturnTheSameObjectOnSingleCalls<T>(object item, ILazy<T> lazy)
+        {
+            Assert.AreEqual(item, lazy.Get());
         }
 
         [Test]
-        public static void SimpleConcurrentLazy()
-        {
-            var stringResult = LazyFactory<string>.CreateLazyConcurrent(() => "Ibr?");
-            Assert.AreEqual("Ibr?", stringResult.Get());
-            var intResult = LazyFactory<int>.CreateLazyConcurrent(() => 228);
-            Assert.AreEqual(228, intResult.Get());
-        }
-
-        [Test]
-        public static void MultipleLazy()
+        public static void LazyShouldReturnTheSameObjectOnMultipleCalls()
         {
             var counter = 0;
-            var result = LazyFactory<int>.CreateLazy(() => ++counter);
+            var result = LazyFactory.CreateLazy(() => ++counter);
             for (var i = 0; i < 10; i++)
             {
                 Assert.AreEqual(1, result.Get());
@@ -35,10 +48,10 @@ namespace Lazy.Tests
         }
 
         [Test]
-        public static void MultipleConcurrentLazy()
+        public static void ConcurrentLazyShouldReturnTheSameObjectOnMultipleCalls()
         {
             var counter = 0;
-            var result = LazyFactory<int>.CreateLazyConcurrent(() => ++counter);
+            var result = LazyFactory.CreateLazyConcurrent(() => ++counter);
             for (var i = 0; i < 10; i++)
             {
                 Assert.AreEqual(1, result.Get());
@@ -46,10 +59,18 @@ namespace Lazy.Tests
         }
 
         [Test]
-        public static void Races()
+        public static void LazyShouldThrowExceptionWhenSupplierIsNull()
+            => Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazy<int>(null));
+
+        [Test]
+        public static void ConcurrentLazyShouldThrowExceptionWhenSupplierIsNull()
+            => Assert.Throws<ArgumentNullException>(() => LazyFactory.CreateLazyConcurrent<int>(null));
+
+        [Test]
+        public static void ConcurrentLazyShouldNotAllowRaces()
         {
             var counter = 0;
-            var result = LazyFactory<int>.CreateLazyConcurrent(() => Interlocked.Increment(ref counter));
+            var result = LazyFactory.CreateLazyConcurrent(() => Interlocked.Increment(ref counter));
             var threads = new Thread[10000];
             for (var i = 0; i < threads.Length; i++)
             {

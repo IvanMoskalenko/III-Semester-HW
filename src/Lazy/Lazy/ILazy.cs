@@ -6,6 +6,10 @@
     /// <typeparam name="T">Type of returning object.</typeparam>
     public interface ILazy<out T>
     {
+        /// <summary>
+        /// Allows to calculate and return the value or return previously calculated one.
+        /// </summary>
+        /// <returns>Computation result.</returns>
         T Get();
     }
 }
