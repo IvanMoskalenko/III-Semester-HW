@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using NUnit.Framework;
 
 namespace ThreadPool.Tests
@@ -7,13 +8,14 @@ namespace ThreadPool.Tests
     {
         private const int CountOfTasks = 100;
         private readonly IMyTask<int>[] _tasks = new IMyTask<int>[CountOfTasks];
-        private readonly MyThreadPool _threadPool = new(10);
         private readonly Func<int>[] _functions = new Func<int>[CountOfTasks];
-        
-        
+        private MyThreadPool _threadPool;
+
+
         [SetUp]
         public void Setup()
         {
+            _threadPool = new MyThreadPool(10);
             for (var i = 0; i < CountOfTasks; i++)
             {
                 var index = i;
@@ -36,7 +38,7 @@ namespace ThreadPool.Tests
         }
 
         [Test]
-        public void ThreadPoolShouldCalculateSubmittedTasksWhenUserShutdown()
+        public void ThreadPoolShouldCalculateSubmittedTasksAfterShutdown()
         {
             _threadPool.Shutdown();
             for (var i = 0; i < CountOfTasks; i++)
@@ -58,7 +60,59 @@ namespace ThreadPool.Tests
                 Assert.AreEqual(i + 1, continueTasks[i].Result);
             }
         }
+        
+        [Test]
+        public void ContinueWithShouldCalculateSimpleTasksAfterShutdown()
+        {
+            var continueTasks = new IMyTask<int>[CountOfTasks];
+            for (var i = 0; i < CountOfTasks; i++)
+            {
+                continueTasks[i] = _tasks[i].ContinueWith(x => x + 1);
+            }
+            _threadPool.Shutdown();
+            for (var i = 0; i < CountOfTasks; i++)
+            {
+                Assert.AreEqual(i + 1, continueTasks[i].Result);
+            }
+        }
 
+        [Test]
+        public void ThreadPoolShouldRaiseExceptionWhenNumberOfThreadsLessOrEqualToZero()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var _ = new MyThreadPool(-228);
+            });
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                var _ = new MyThreadPool(0);
+            });
+        }
+
+        [Test]
+        public void ThreadPoolAndContinueWithShouldRaiseExceptionWhenSubmitToTurnedOffPool()
+        {
+            _threadPool.Shutdown();
+            Assert.Throws<ThreadInterruptedException>(() => _threadPool.Submit(() => 0));
+            var newThreadPool = new MyThreadPool(10);
+            var task = newThreadPool.Submit(() => 0);
+            newThreadPool.Shutdown();
+            Assert.Throws<ThreadInterruptedException>(() => task.ContinueWith(x => x + 1));
+        }
+
+        [Test]
+        public void ResultShouldThrowExceptions()
+        {
+            var task = _threadPool.Submit(() =>
+            {
+                throw new Exception();
+                return "Ibr";
+            });
+            Assert.Throws<AggregateException>(() =>
+            {
+                var _ = task.Result;
+            });
+        }
 
     }
 }

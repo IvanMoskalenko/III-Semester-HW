@@ -4,6 +4,9 @@ using System.Threading;
 
 namespace ThreadPool
 {
+    /// <summary>
+    /// Provides a pool of threads that can be used to execute tasks
+    /// </summary>
     public class MyThreadPool
     {
         private readonly ConcurrentQueue<Action> _tasks;
@@ -12,6 +15,11 @@ namespace ThreadPool
 
         public MyThreadPool(int countOfThreads)
         {
+            if (countOfThreads <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(countOfThreads));
+            }
+
             _tasks = new ConcurrentQueue<Action>();
             _threads = new Thread[countOfThreads];
             _cancellationToken = new CancellationTokenSource();
@@ -22,6 +30,10 @@ namespace ThreadPool
             }
         }
 
+        /// <summary>
+        /// Represents an operation
+        /// </summary>
+        /// <typeparam name="TResult">Type of returned result produced by operation</typeparam>
         private class MyTask<TResult> : IMyTask<TResult>
         {
             private TResult _result;
@@ -29,8 +41,11 @@ namespace ThreadPool
             private AggregateException _exception;
             private readonly ConcurrentQueue<Action> _innerTasks;
             private readonly MyThreadPool _threadPool;
+
+            /// <inheritdoc />
             public bool IsCompleted { get; private set; }
 
+            /// <inheritdoc />
             public TResult Result
             {
                 get
@@ -55,6 +70,9 @@ namespace ThreadPool
                 _innerTasks = new ConcurrentQueue<Action>();
             }
 
+            /// <summary>
+            /// Calculates the result
+            /// </summary>
             public void Run()
             {
                 try
@@ -76,6 +94,7 @@ namespace ThreadPool
                 }
             }
 
+            /// <inheritdoc />
             public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func)
             {
                 lock (_threadPool._cancellationToken)
@@ -113,7 +132,14 @@ namespace ThreadPool
             }
         }
 
-        public IMyTask<T> Submit<T>(Func<T> task)
+        /// <summary>
+        /// Add func to queue
+        /// </summary>
+        /// <param name="func">Func to calculate</param>
+        /// <typeparam name="T">Type of returned result</typeparam>
+        /// <returns>New task</returns>
+        /// <exception cref="ThreadInterruptedException">Cancellation was requested</exception>
+        public IMyTask<T> Submit<T>(Func<T> func)
         {
             lock (_cancellationToken)
             {
@@ -122,13 +148,15 @@ namespace ThreadPool
                     throw new ThreadInterruptedException();
                 }
 
-                var myTask = new MyTask<T>(task, this);
+                var myTask = new MyTask<T>(func, this);
                 _tasks.Enqueue(myTask.Run);
                 return myTask;
             }
         }
 
-
+        /// <summary>
+        /// Shutdowns MyThreadPool
+        /// </summary>
         public void Shutdown()
         {
             _cancellationToken.Cancel();
@@ -139,6 +167,10 @@ namespace ThreadPool
             }
         }
 
+        /// <summary>
+        /// Creates worker for ThreadPool
+        /// </summary>
+        /// <returns>Thread for ThreadPool</returns>
         private Thread CreateThread()
         {
             var thread = new Thread(() =>

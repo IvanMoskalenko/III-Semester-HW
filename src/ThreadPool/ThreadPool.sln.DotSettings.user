@@ -4,10 +4,29 @@
     &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests.ContinueWithShouldCalculateSimpleTasks&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=55877751_002D66e6_002D4e94_002D8daf_002Df2790bf7a98b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=361b3e78_002Ddde8_002D490d_002D9cd6_002D14b4ad81da7a/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Tests #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
-    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests.ThreadPoolShouldCalculateSubmittedTasksWhenUserShutdown&lt;/TestId&gt;
-    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests.ContinueWithShouldCalculateSimpleTasks&lt;/TestId&gt;
+    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=55877751_002D66e6_002D4e94_002D8daf_002Df2790bf7a98b/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=6938bcfb_002D6ba9_002D40e5_002Dacf2_002Da0a496b32c10/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Tests #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=7460d8a7_002D5208_002D49f8_002Db950_002D9fd482c2cb67/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Tests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=8119a65f_002Dd2c0_002D4f9b_002Daeff_002Dab4b0171362e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Tests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::189EF46D-07BB-470F-A2C2-8614DACE343C::net5.0::ThreadPool.Tests.Tests&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e17dfb66_002D2d14_002D4f16_002Dab42_002D401674899e56/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ContinueWithShouldCalculateSimpleTasks #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
