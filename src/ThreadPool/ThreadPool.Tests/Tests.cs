@@ -103,11 +103,7 @@ namespace ThreadPool.Tests
         [Test]
         public void ResultShouldThrowExceptions()
         {
-            var task = _threadPool.Submit(() =>
-            {
-                throw new Exception();
-                return "Ibr";
-            });
+            var task = _threadPool.Submit<object>(() => throw new Exception());
             Assert.Throws<AggregateException>(() =>
             {
                 var _ = task.Result;
