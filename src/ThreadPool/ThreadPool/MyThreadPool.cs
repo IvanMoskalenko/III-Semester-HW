@@ -6,9 +6,9 @@ namespace ThreadPool
 {
     public class MyThreadPool
     {
-        private ConcurrentQueue<Action> _tasks;
-        private Thread[] _threads;
-        private CancellationTokenSource _cancellationToken;
+        private readonly ConcurrentQueue<Action> _tasks;
+        private readonly Thread[] _threads;
+        private readonly CancellationTokenSource _cancellationToken;
 
         public MyThreadPool(int countOfThreads)
         {
@@ -20,14 +20,15 @@ namespace ThreadPool
                 _threads[i] = CreateThread();
                 _threads[i].Start();
             }
-            
         }
 
         private class MyTask<TResult> : IMyTask<TResult>
         {
             private TResult _result;
-            private Func<TResult> _func;
+            private readonly Func<TResult> _func;
             private AggregateException _exception;
+            private readonly ConcurrentQueue<Action> _innerTasks;
+            private readonly MyThreadPool _threadPool;
             public bool IsCompleted { get; private set; }
 
             public TResult Result
@@ -46,10 +47,12 @@ namespace ThreadPool
                     }
                 }
             }
-            
-            public MyTask(Func<TResult> function)
+
+            public MyTask(Func<TResult> function, MyThreadPool pool)
             {
                 _func = function;
+                _threadPool = pool;
+                _innerTasks = new ConcurrentQueue<Action>();
             }
 
             public void Run()
@@ -62,11 +65,51 @@ namespace ThreadPool
                 {
                     _exception = new AggregateException(e);
                 }
+
                 IsCompleted = true;
+                while (!_innerTasks.IsEmpty)
+                {
+                    if (_innerTasks.TryDequeue(out var continueTask))
+                    {
+                        _threadPool._tasks.Enqueue(continueTask);
+                    }
+                }
             }
+
             public IMyTask<TNewResult> ContinueWith<TNewResult>(Func<TResult, TNewResult> func)
             {
-                throw new NotImplementedException();
+                lock (_threadPool._cancellationToken)
+                {
+                    if (_threadPool._cancellationToken.Token.IsCancellationRequested)
+                    {
+                        throw new ThreadInterruptedException();
+                    }
+
+                    if (IsCompleted)
+                    {
+                        return _threadPool.Submit(() =>
+                        {
+                            if (_exception != null)
+                            {
+                                throw _exception;
+                            }
+
+                            return func(_result);
+                        });
+                    }
+
+                    var newInnerTask = new MyTask<TNewResult>(() =>
+                    {
+                        if (_exception != null)
+                        {
+                            throw _exception;
+                        }
+
+                        return func(_result);
+                    }, _threadPool);
+                    _innerTasks.Enqueue(newInnerTask.Run);
+                    return newInnerTask;
+                }
             }
         }
 
@@ -78,25 +121,22 @@ namespace ThreadPool
                 {
                     throw new ThreadInterruptedException();
                 }
+
+                var myTask = new MyTask<T>(task, this);
+                _tasks.Enqueue(myTask.Run);
+                return myTask;
             }
-            var myTask = new MyTask<T>(task);
-            _tasks.Enqueue(myTask.Run);
-            return myTask;
         }
-        
-        
+
+
         public void Shutdown()
         {
-            lock (_cancellationToken)
-            {
-                _cancellationToken.Cancel();
-            }
+            _cancellationToken.Cancel();
 
             foreach (var t in _threads)
             {
                 t.Join();
             }
-            
         }
 
         private Thread CreateThread()
@@ -109,6 +149,7 @@ namespace ThreadPool
                     {
                         return;
                     }
+
                     if (!_tasks.TryDequeue(out var task)) continue;
                     task();
                 }
