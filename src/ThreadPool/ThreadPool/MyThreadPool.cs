@@ -37,7 +37,7 @@ namespace ThreadPool
         private class MyTask<TResult> : IMyTask<TResult>
         {
             private TResult _result;
-            private readonly Func<TResult> _func;
+            private Func<TResult> _func;
             private AggregateException _exception;
             private readonly ConcurrentQueue<Action> _innerTasks;
             private readonly MyThreadPool _threadPool;
@@ -78,6 +78,7 @@ namespace ThreadPool
                 try
                 {
                     _result = _func();
+                    _func = null;
                 }
                 catch (Exception e)
                 {
