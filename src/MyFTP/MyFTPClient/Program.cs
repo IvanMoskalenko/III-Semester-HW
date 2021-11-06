@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace MyFTPClient
@@ -9,8 +10,24 @@ namespace MyFTPClient
         {
             Console.Write("Enter IP: ");
             var ip = Console.ReadLine();
+            if (!IPAddress.TryParse(ip, out _))
+            {
+                Console.WriteLine("Incorrect IP");
+                return;
+            }
+
             Console.Write("Enter port: ");
-            var port = Convert.ToInt32(Console.ReadLine());
+            int port;
+            try
+            {
+                port = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("Incorrect port");
+                return;
+            }
+
             switch (args[0])
             {
                 case "1":

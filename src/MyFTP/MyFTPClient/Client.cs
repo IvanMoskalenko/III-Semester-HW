@@ -5,8 +5,22 @@ using System.Threading.Tasks;
 
 namespace MyFTPClient
 {
+    /// <summary>
+    /// Implementation of client
+    /// </summary>
     public static class Client
     {
+        /// <summary>
+        /// Sends request to server and gets response
+        /// </summary>
+        /// <param name="command">Command to server. Can be "1" or "2"</param>
+        /// <param name="path">Path to file or directory</param>
+        /// <param name="ip">Server IP</param>
+        /// <param name="port">Server port</param>
+        /// <param name="pathToSave">Path to save file if command == "2"</param>
+        /// <returns>Response from server</returns>
+        /// <exception cref="DirectoryNotFoundException">Raises if directory doesn't exist on server</exception>
+        /// <exception cref="FileNotFoundException">Raises if file doesn't exist on server</exception>
         public static async Task<string> Run(string command, string path, string ip, int port, string pathToSave = "")
         {
             using var client = new TcpClient(ip, port);
@@ -23,6 +37,7 @@ namespace MyFTPClient
                     {
                         throw new DirectoryNotFoundException();
                     }
+
                     return data;
                 case "2":
                     var size = await reader.ReadLineAsync();
@@ -30,6 +45,7 @@ namespace MyFTPClient
                     {
                         throw new FileNotFoundException();
                     }
+
                     var content = await reader.ReadToEndAsync();
                     await File.WriteAllBytesAsync(pathToSave, Convert.FromBase64String(content));
                     return size;

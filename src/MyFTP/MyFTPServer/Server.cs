@@ -7,8 +7,16 @@ using System.Threading.Tasks;
 
 namespace MyFTPServer
 {
+    /// <summary>
+    /// Implementation of server
+    /// </summary>
     public static class Server
     {
+        /// <summary>
+        /// Executes "List" command
+        /// </summary>
+        /// <param name="writer">TextWriter for writing response</param>
+        /// <param name="directoryPath">Directory for getting list</param>
         private static async Task List(TextWriter writer, string directoryPath)
         {
             if (!Directory.Exists(directoryPath))
@@ -25,7 +33,12 @@ namespace MyFTPServer
             result = files.Aggregate(result, (current, file) => current + file + " false\n");
             await writer.WriteAsync(result);
         }
-
+        
+        /// <summary>
+        /// Executes "Get" command
+        /// </summary>
+        /// <param name="writer">TextWriter for writing response</param>
+        /// <param name="path">Path to get file</param>
         private static async Task Get(TextWriter writer, string path)
         {
             if (!File.Exists(path))
@@ -41,6 +54,10 @@ namespace MyFTPServer
             await writer.WriteAsync(Convert.ToBase64String(content));
         }
 
+        /// <summary>
+        /// Listens clients
+        /// </summary>
+        /// <param name="socket">Socket for listening clients</param>
         private static async Task Work(Socket socket)
         {
             var stream = new NetworkStream(socket);
@@ -68,7 +85,12 @@ namespace MyFTPServer
             await writer.FlushAsync();
             socket.Close();
         }
-
+        
+        /// <summary>
+        /// Starts server
+        /// </summary>
+        /// <param name="address">IP address to get started</param>
+        /// <param name="port">Port to get started</param>
         public static async Task Start(IPAddress address, int port)
         {
             var listener = new TcpListener(address, port);
