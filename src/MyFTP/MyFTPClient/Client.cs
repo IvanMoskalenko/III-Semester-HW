@@ -19,9 +19,17 @@ namespace MyFTPClient
             {
                 case "1":
                     var data = await reader.ReadToEndAsync();
+                    if (data == "-1")
+                    {
+                        throw new DirectoryNotFoundException();
+                    }
                     return data;
                 case "2":
                     var size = await reader.ReadLineAsync();
+                    if (size == "-1")
+                    {
+                        throw new FileNotFoundException();
+                    }
                     var content = await reader.ReadToEndAsync();
                     await File.WriteAllBytesAsync(pathToSave, Convert.FromBase64String(content));
                     return size;

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
@@ -41,6 +42,21 @@ namespace MyFTP.Tests
             FileAssert.AreEqual(filePath, newFilePath);
             File.Delete(newFilePath);
             Assert.AreEqual("7", actual);
+        }
+
+        [Test]
+        public void ExceptionShouldRaiseWhenFileDoesNotExist()
+        {
+            var filePath = Path.Join(_path, "thisFileDoesNotExist.txt");
+            var newFilePath = Path.Join(_path, "test3.txt");
+            Assert.Throws<AggregateException>( () => Client.Run("2", filePath, Ip, Port, newFilePath).Wait());
+        }
+        
+        [Test]
+        public void ExceptionShouldRaiseWhenDirectoryDoesNotExist()
+        {
+            var path = Path.Join(_path, "DirectoryDoesNotExist");
+            Assert.Throws<AggregateException>( () => Client.Run("1", path, Ip, Port).Wait());
         }
     }
 }
