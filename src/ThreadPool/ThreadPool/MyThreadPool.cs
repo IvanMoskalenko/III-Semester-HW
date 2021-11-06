@@ -101,7 +101,7 @@ namespace ThreadPool
                 {
                     if (_threadPool._cancellationToken.Token.IsCancellationRequested)
                     {
-                        throw new ThreadInterruptedException();
+                        throw new InvalidOperationException();
                     }
 
                     if (IsCompleted)
@@ -145,7 +145,7 @@ namespace ThreadPool
             {
                 if (_cancellationToken.Token.IsCancellationRequested)
                 {
-                    throw new ThreadInterruptedException();
+                    throw new InvalidOperationException();
                 }
 
                 var myTask = new MyTask<T>(func, this);

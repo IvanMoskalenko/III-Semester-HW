@@ -11,7 +11,6 @@ namespace ThreadPool.Tests
         private readonly Func<int>[] _functions = new Func<int>[CountOfTasks];
         private MyThreadPool _threadPool;
 
-
         [SetUp]
         public void Setup()
         {
@@ -93,11 +92,11 @@ namespace ThreadPool.Tests
         public void ThreadPoolAndContinueWithShouldRaiseExceptionWhenSubmitToTurnedOffPool()
         {
             _threadPool.Shutdown();
-            Assert.Throws<ThreadInterruptedException>(() => _threadPool.Submit(() => 0));
+            Assert.Throws<InvalidOperationException>(() => _threadPool.Submit(() => 0));
             var newThreadPool = new MyThreadPool(10);
             var task = newThreadPool.Submit(() => 0);
             newThreadPool.Shutdown();
-            Assert.Throws<ThreadInterruptedException>(() => task.ContinueWith(x => x + 1));
+            Assert.Throws<InvalidOperationException>(() => task.ContinueWith(x => x + 1));
         }
 
         [Test]
