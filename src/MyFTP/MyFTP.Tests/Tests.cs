@@ -32,13 +32,13 @@ namespace MyFTP.Tests
                                     + "../../../../MyFTP.Tests/TestData/empty2 false\n";
             Assert.AreEqual(expected, actual);
         }
-        [Test]
-        public async Task GetShouldReturnRightSizeAndDownloadFile()
-        {
-            var actual = await Client.Run("2", _path + "/empty1", Ip, Port, _path + "/test");
-            FileAssert.AreEqual(_path + "/empty1", _path + "/test");
-            File.Delete(_path + "/test");
-            Assert.AreEqual("7", actual);
-        }
+        // [Test]
+        // public async Task GetShouldReturnRightSizeAndDownloadFile()
+        // {
+        //     var actual = await Client.Run("2", _path + "/empty1", Ip, Port, _path + "/test");
+        //     FileAssert.AreEqual(_path + "/empty1", _path + "/test");
+        //     File.Delete(_path + "/test");
+        //     Assert.AreEqual("7", actual);
+        // }
     }
 }
