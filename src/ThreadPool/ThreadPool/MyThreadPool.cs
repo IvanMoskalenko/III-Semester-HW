@@ -9,7 +9,7 @@ namespace ThreadPool
     /// </summary>
     public class MyThreadPool
     {
-        private readonly ConcurrentQueue<Action> _tasks;
+        private readonly BlockingCollection<Action> _tasks;
         private readonly Thread[] _threads;
         private readonly CancellationTokenSource _cancellationToken;
 
@@ -20,7 +20,7 @@ namespace ThreadPool
                 throw new ArgumentOutOfRangeException(nameof(countOfThreads));
             }
 
-            _tasks = new ConcurrentQueue<Action>();
+            _tasks = new BlockingCollection<Action>();
             _threads = new Thread[countOfThreads];
             _cancellationToken = new CancellationTokenSource();
             for (var i = 0; i < countOfThreads; i++)
@@ -90,7 +90,7 @@ namespace ThreadPool
                 {
                     if (_innerTasks.TryDequeue(out var continueTask))
                     {
-                        _threadPool._tasks.Enqueue(continueTask);
+                        _threadPool._tasks.Add(continueTask);
                     }
                 }
             }
@@ -150,7 +150,7 @@ namespace ThreadPool
                 }
 
                 var myTask = new MyTask<T>(func, this);
-                _tasks.Enqueue(myTask.Run);
+                _tasks.Add(myTask.Run);
                 return myTask;
             }
         }
@@ -162,8 +162,8 @@ namespace ThreadPool
         {
             lock (_cancellationToken)
             {
+                _tasks.CompleteAdding();
                 _cancellationToken.Cancel();
-
                 foreach (var t in _threads)
                 {
                     t.Join();
@@ -181,13 +181,17 @@ namespace ThreadPool
             {
                 while (true)
                 {
-                    if (_cancellationToken.Token.IsCancellationRequested && _tasks.IsEmpty)
+                    try
+                    {
+                        foreach (var task in _tasks.GetConsumingEnumerable(_cancellationToken.Token))
+                        {
+                            task();
+                        }
+                    }
+                    catch (OperationCanceledException)
                     {
                         return;
                     }
-
-                    if (!_tasks.TryDequeue(out var task)) continue;
-                    task();
                 }
             });
             return thread;
