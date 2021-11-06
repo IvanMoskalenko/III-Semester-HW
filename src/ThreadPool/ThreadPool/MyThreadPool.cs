@@ -160,11 +160,14 @@ namespace ThreadPool
         /// </summary>
         public void Shutdown()
         {
-            _cancellationToken.Cancel();
-
-            foreach (var t in _threads)
+            lock (_cancellationToken)
             {
-                t.Join();
+                _cancellationToken.Cancel();
+
+                foreach (var t in _threads)
+                {
+                    t.Join();
+                }
             }
         }
 
