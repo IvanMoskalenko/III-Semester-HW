@@ -24,12 +24,12 @@ namespace MyFTP.Tests
         public async Task ListShouldReturnRightSizeAndItems()
         {
             var actual = await Client.Run("1", _path, Ip, Port);
-            const string expected = "5\n" 
-                                    + "../../../../MyFTP.Tests/TestData/Empty2 true\n"
-                                    + "../../../../MyFTP.Tests/TestData/Empty1 true\n"
-                                    + "../../../../MyFTP.Tests/TestData/empty1 false\n"
-                                    + "../../../../MyFTP.Tests/TestData/empty3 false\n"
-                                    + "../../../../MyFTP.Tests/TestData/empty2 false\n";
+            var expected = "5\n" 
+                                    + Path.Join(_path, "Empty2") + " true\n"
+                                    + Path.Join(_path, "Empty1") + " true\n"
+                                    + Path.Join(_path, "empty1") + " false\n"
+                                    + Path.Join(_path, "empty3") + " false\n"
+                                    + Path.Join(_path, "empty2") + " false\n";
             Assert.AreEqual(expected, actual);
         }
         // [Test]
