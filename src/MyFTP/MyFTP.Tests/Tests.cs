@@ -25,8 +25,8 @@ namespace MyFTP.Tests
         {
             var actual = await Client.Run("1", _path, Ip, Port);
             var expected = "2\n"
-                           + Path.Join(_path, "test2.txt") + " false\n"
-                           + Path.Join(_path, "test1.txt") + " false\n";
+                           + Path.Join(_path, "test1.txt") + " false\n"
+                           + Path.Join(_path, "test2.txt") + " false\n";
                                     // + Path.Join(_path, "empty1") + " false\n"
                                     // + Path.Join(_path, "empty3") + " false\n"
                                     // + Path.Join(_path, "empty2") + " false\n";
