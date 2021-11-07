@@ -119,5 +119,90 @@ namespace ThreadPool.Tests
             });
         }
 
+        [Test]
+        public void ThreadPoolShouldWorkCorrectlyWithSubmitAndShutdownWhenWorksConcurrently()
+        {
+            var mre = new ManualResetEvent(false);
+            var t1 = new Thread(() =>
+            {
+                _threadPool.Shutdown();
+                mre.Set();
+            });
+            var t2 = new Thread(() =>
+            {
+                mre.WaitOne();
+                Assert.Throws<InvalidOperationException>(() => _threadPool.Submit(() => 228));
+            });
+            t2.Start();
+            t1.Start();
+            t2.Join();
+            t1.Join();
+
+            var newThreadPool = new MyThreadPool(10);
+            mre.Reset();
+            var t3 = new Thread(() =>
+            {
+                mre.WaitOne();
+                newThreadPool.Shutdown();
+            });
+            var t4 = new Thread(() =>
+            {
+                var task = newThreadPool.Submit(() => 1);
+                mre.Set();
+                Assert.AreEqual(1, task.Result);
+            });
+            t4.Start();
+            t3.Start();
+            t4.Join();
+            t3.Join();
+        }
+
+        [Test]
+        public void ThreadPoolShouldWorkCorrectlyWithContinueWithAndShutdownWhenWorksConcurrently()
+        {
+            var mre = new ManualResetEvent(false);
+            var mre1 = new ManualResetEvent(false);
+            var t1 = new Thread(() =>
+            {
+                mre1.WaitOne();
+                _threadPool.Shutdown();
+                mre.Set();
+            });
+            var t2 = new Thread(() =>
+            {
+                var task = _threadPool.Submit(() => 228);
+                mre1.Set();
+                mre.WaitOne();
+                Assert.Throws<InvalidOperationException>(() =>
+                {
+                    task.ContinueWith(x => x + 1);
+                });
+            });
+            t2.Start();
+            t1.Start();
+            t2.Join();
+            t1.Join();
+
+            var newThreadPool = new MyThreadPool(10);
+            mre.Reset();
+            mre1.Reset();
+            var t3 = new Thread(() =>
+            {
+                mre.WaitOne();
+                newThreadPool.Shutdown();
+            });
+            var t4 = new Thread(() =>
+            {
+                var task = newThreadPool.Submit(() => 1);
+                var newTask = task.ContinueWith(x => x + 1);
+                mre.Set();
+                Assert.AreEqual(2, newTask.Result);
+            });
+            t4.Start();
+            t3.Start();
+            t4.Join();
+            t3.Join();
+        }
+
     }
 }
