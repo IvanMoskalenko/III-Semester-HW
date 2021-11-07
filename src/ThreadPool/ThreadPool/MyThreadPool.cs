@@ -12,6 +12,8 @@ namespace ThreadPool
         private readonly BlockingCollection<Action> _tasks;
         private readonly Thread[] _threads;
         private readonly CancellationTokenSource _cancellationToken;
+        private volatile int _continuationsCounter;
+        private readonly AutoResetEvent _areContinuationsEmpty = new(false);
 
         public MyThreadPool(int countOfThreads)
         {
@@ -23,6 +25,7 @@ namespace ThreadPool
             _tasks = new BlockingCollection<Action>();
             _threads = new Thread[countOfThreads];
             _cancellationToken = new CancellationTokenSource();
+            _continuationsCounter = 0;
             for (var i = 0; i < countOfThreads; i++)
             {
                 _threads[i] = CreateThread();
@@ -43,7 +46,7 @@ namespace ThreadPool
             private readonly MyThreadPool _threadPool;
             private readonly ManualResetEvent _isCalculated;
             private readonly object _lockObject = new();
-            
+
             /// <inheritdoc />
             public bool IsCompleted { get; private set; }
 
@@ -92,13 +95,11 @@ namespace ThreadPool
                     while (!_innerTasks.IsEmpty)
                     {
                         if (!_innerTasks.TryDequeue(out var continueTask)) continue;
-                        try
+                        _threadPool._tasks.Add(continueTask);
+                        Interlocked.Decrement(ref _threadPool._continuationsCounter);
+                        if (_threadPool._continuationsCounter == 0)
                         {
-                            _threadPool._tasks.Add(continueTask, _threadPool._cancellationToken.Token);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            return;
+                            _threadPool._areContinuationsEmpty.Set();
                         }
                     }
                 }
@@ -140,6 +141,7 @@ namespace ThreadPool
                             return func(_result);
                         }, _threadPool);
                         _innerTasks.Enqueue(newInnerTask.Run);
+                        Interlocked.Increment(ref _threadPool._continuationsCounter);
                         return newInnerTask;
                     }
                 }
@@ -176,6 +178,14 @@ namespace ThreadPool
             lock (_cancellationToken)
             {
                 _cancellationToken.Cancel();
+            }
+            if (_continuationsCounter == 0)
+            {
+                _tasks.CompleteAdding();
+            }
+            else
+            {
+                _areContinuationsEmpty.WaitOne();
                 _tasks.CompleteAdding();
             }
             foreach (var t in _threads)
