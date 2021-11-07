@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using NUnit.Framework;
 
@@ -63,12 +64,21 @@ namespace ThreadPool.Tests
         [Test]
         public void ContinueWithShouldCalculateSimpleTasksAfterShutdown()
         {
+            var mre = new ManualResetEvent(false);
             var continueTasks = new IMyTask<int>[CountOfTasks];
             for (var i = 0; i < CountOfTasks; i++)
             {
-                continueTasks[i] = _tasks[i].ContinueWith(x => x + 1);
+                continueTasks[i] = _tasks[i].ContinueWith(x =>
+                {
+                    mre.WaitOne();
+                    return x + 1;
+                });
             }
-            _threadPool.Shutdown();
+            var thread = new Thread(() => _threadPool.Shutdown());
+            thread.Start();
+            mre.Set();
+            thread.Join();
+
             for (var i = 0; i < CountOfTasks; i++)
             {
                 Assert.AreEqual(i + 1, continueTasks[i].Result);

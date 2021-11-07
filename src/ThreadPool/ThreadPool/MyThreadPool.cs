@@ -41,7 +41,9 @@ namespace ThreadPool
             private AggregateException _exception;
             private readonly ConcurrentQueue<Action> _innerTasks;
             private readonly MyThreadPool _threadPool;
-
+            private readonly ManualResetEvent _isCalculated;
+            private readonly object _lockObject = new();
+            
             /// <inheritdoc />
             public bool IsCompleted { get; private set; }
 
@@ -50,16 +52,13 @@ namespace ThreadPool
             {
                 get
                 {
-                    while (true)
+                    _isCalculated.WaitOne();
+                    if (_exception != null)
                     {
-                        if (!IsCompleted) continue;
-                        if (_exception != null)
-                        {
-                            throw _exception;
-                        }
-
-                        return _result;
+                        throw _exception;
                     }
+
+                    return _result;
                 }
             }
 
@@ -68,6 +67,7 @@ namespace ThreadPool
                 _func = function;
                 _threadPool = pool;
                 _innerTasks = new ConcurrentQueue<Action>();
+                _isCalculated = new ManualResetEvent(false);
             }
 
             /// <summary>
@@ -84,13 +84,22 @@ namespace ThreadPool
                 {
                     _exception = new AggregateException(e);
                 }
-
-                IsCompleted = true;
-                while (!_innerTasks.IsEmpty)
+                
+                lock (_lockObject)
                 {
-                    if (_innerTasks.TryDequeue(out var continueTask))
+                    IsCompleted = true;
+                    _isCalculated.Set();
+                    while (!_innerTasks.IsEmpty)
                     {
-                        _threadPool._tasks.Add(continueTask);
+                        if (!_innerTasks.TryDequeue(out var continueTask)) continue;
+                        try
+                        {
+                            _threadPool._tasks.Add(continueTask, _threadPool._cancellationToken.Token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            return;
+                        }
                     }
                 }
             }
@@ -100,14 +109,28 @@ namespace ThreadPool
             {
                 lock (_threadPool._cancellationToken)
                 {
+
                     if (_threadPool._cancellationToken.Token.IsCancellationRequested)
                     {
                         throw new InvalidOperationException();
                     }
 
-                    if (IsCompleted)
+                    lock (_lockObject)
                     {
-                        return _threadPool.Submit(() =>
+                        if (IsCompleted)
+                        {
+                            return _threadPool.Submit(() =>
+                            {
+                                if (_exception != null)
+                                {
+                                    throw _exception;
+                                }
+
+                                return func(_result);
+                            });
+                        }
+
+                        var newInnerTask = new MyTask<TNewResult>(() =>
                         {
                             if (_exception != null)
                             {
@@ -115,20 +138,10 @@ namespace ThreadPool
                             }
 
                             return func(_result);
-                        });
+                        }, _threadPool);
+                        _innerTasks.Enqueue(newInnerTask.Run);
+                        return newInnerTask;
                     }
-
-                    var newInnerTask = new MyTask<TNewResult>(() =>
-                    {
-                        if (_exception != null)
-                        {
-                            throw _exception;
-                        }
-
-                        return func(_result);
-                    }, _threadPool);
-                    _innerTasks.Enqueue(newInnerTask.Run);
-                    return newInnerTask;
                 }
             }
         }
@@ -162,12 +175,12 @@ namespace ThreadPool
         {
             lock (_cancellationToken)
             {
-                _tasks.CompleteAdding();
                 _cancellationToken.Cancel();
-                foreach (var t in _threads)
-                {
-                    t.Join();
-                }
+                _tasks.CompleteAdding();
+            }
+            foreach (var t in _threads)
+            {
+                t.Join();
             }
         }
 
@@ -179,21 +192,14 @@ namespace ThreadPool
         {
             var thread = new Thread(() =>
             {
-                while (true)
+                foreach (var task in _tasks.GetConsumingEnumerable())
                 {
-                    try
-                    {
-                        foreach (var task in _tasks.GetConsumingEnumerable(_cancellationToken.Token))
-                        {
-                            task();
-                        }
-                    }
-                    catch (OperationCanceledException)
-                    {
-                        return;
-                    }
+                    task();
                 }
-            });
+            })
+            {
+                IsBackground = true
+            };
             return thread;
         }
     }
