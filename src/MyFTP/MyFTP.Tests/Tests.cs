@@ -8,7 +8,6 @@ using NUnit.Framework;
 
 namespace MyFTP.Tests
 {
-    //[NonParallelizable]
     public class Tests
     {
         private readonly string _path = Path.Join("..", "..", "..", "..", "MyFTP.Tests", "TestData");
