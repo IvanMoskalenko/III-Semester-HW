@@ -14,22 +14,30 @@ namespace MyFTP.Tests
         private readonly string _path = Path.Join("..", "..", "..", "..", "MyFTP.Tests", "TestData");
         private const string Ip = "127.0.0.1";
         private const int Port = 1337;
+        private readonly Client _client = new(Ip, Port);
+        private readonly Server _server = new(IPAddress.Parse(Ip), Port);
 
         [SetUp]
         public void Setup()
         {
-            Server.Start(IPAddress.Parse(Ip), Port);
+            _server.Start();
         }
 
         [Test]
         public async Task ListShouldReturnRightSizeAndItems()
         {
-            var actual = await Client.Run("1", _path, Ip, Port);
-            var expected = "3\n"
-                           + Path.Join(_path, "directory") + " true\n"
-                           + Path.Join(_path, "test1.txt") + " false\n"
-                           + Path.Join(_path, "test2.txt") + " false\n";
-            Assert.AreEqual(expected, actual);
+            var actual = await _client.List(_path);
+            Assert.AreEqual(3, actual.Count);
+            if (actual.Contains((Path.Join(_path, "directory"), true)) &&
+                actual.Contains((Path.Join(_path, "test1.txt"), false)) &&
+                actual.Contains((Path.Join(_path, "test2.txt"), false)))
+            {
+                Assert.Pass();
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
@@ -37,10 +45,10 @@ namespace MyFTP.Tests
         {
             var filePath = Path.Join(_path, "test1.txt");
             var newFilePath = Path.Join(_path, "test3.txt");
-            var actual = await Client.Run("2", filePath, Ip, Port, newFilePath);
+            var actual = await _client.Get(filePath, newFilePath);
             FileAssert.AreEqual(filePath, newFilePath);
             File.Delete(newFilePath);
-            Assert.AreEqual("7", actual);
+            Assert.AreEqual(7, actual);
         }
 
         [Test]
@@ -48,14 +56,14 @@ namespace MyFTP.Tests
         {
             var filePath = Path.Join(_path, "thisFileDoesNotExist.txt");
             var newFilePath = Path.Join(_path, "test3.txt");
-            Assert.Throws<AggregateException>(() => Client.Run("2", filePath, Ip, Port, newFilePath).Wait());
+            Assert.Throws<AggregateException>(() => _client.Get(filePath, newFilePath).Wait());
         }
 
         [Test]
         public void ExceptionShouldRaiseWhenDirectoryDoesNotExist()
         {
             var path = Path.Join(_path, "DirectoryDoesNotExist");
-            Assert.Throws<AggregateException>(() => Client.Run("1", path, Ip, Port).Wait());
+            Assert.Throws<AggregateException>(() => _client.List(path).Wait());
         }
     }
 }

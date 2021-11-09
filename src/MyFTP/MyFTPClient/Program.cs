@@ -8,42 +8,53 @@ namespace MyFTPClient
     {
         private static async Task Main(string[] args)
         {
-            Console.Write("Enter IP: ");
-            var ip = Console.ReadLine();
-            if (!IPAddress.TryParse(ip, out _))
+            void ShowHelp()
             {
+                Console.WriteLine("Incorrect number of arguments \n" +
+                                  "Please, specify arguments in {command} " +
+                                  "{path} {IP} {port} {optionally: pathToSave} format.\n");
+            }
+
+            if (args.Length != 4 && args.Length != 5)
+            {
+                ShowHelp();
+                return;
+            }
+
+            if (!IPAddress.TryParse(args[2], out _))
+            {
+                ShowHelp();
                 Console.WriteLine("Incorrect IP");
                 return;
             }
 
-            Console.Write("Enter port: ");
-            int port;
-            try
+            if (!int.TryParse(args[3], out _))
             {
-                port = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (FormatException)
-            {
+                ShowHelp();
                 Console.WriteLine("Incorrect port");
                 return;
             }
 
-            var client = new Client(ip, port);
+            var client = new Client(args[2], Convert.ToInt32(args[3]));
 
             switch (args[0])
             {
                 case "1":
-                    var response = await client.List("1", args[1]);
+                    var response = await client.List(args[1]);
                     Console.WriteLine(response.Count);
                     foreach (var (path, isDir) in response)
                     {
                         Console.WriteLine($"{path} {isDir}");
                     }
+
                     break;
                 case "2":
-                    Console.WriteLine("Enter path to save file: ");
-                    var pathToSave = Console.ReadLine();
-                    var size = await client.Get("2", args[1], pathToSave);
+                    if (args.Length != 5)
+                    {
+                        ShowHelp();
+                    }
+
+                    var size = await client.Get(args[1], args[4]);
                     Console.WriteLine(size);
                     break;
                 default:

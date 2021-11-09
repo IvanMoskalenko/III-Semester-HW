@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -19,6 +18,7 @@ namespace MyFTPServer
         private readonly int _port;
         private readonly CancellationTokenSource _tokenSource;
         private readonly List<Task> _clients;
+
         public Server(IPAddress ip, int port)
         {
             _ip = ip;
@@ -26,8 +26,9 @@ namespace MyFTPServer
             _tokenSource = new CancellationTokenSource();
             _clients = new List<Task>();
         }
+
         /// <summary>
-        /// Executes "List" command
+        /// Executes "Get" command
         /// </summary>
         /// <param name="writer">TextWriter for writing response</param>
         /// <param name="directoryPath">Directory for getting list</param>
@@ -35,7 +36,7 @@ namespace MyFTPServer
         {
             if (!Directory.Exists(directoryPath))
             {
-                await writer.WriteLineAsync("-1");
+                await writer.WriteAsync("-1");
                 return;
             }
 
@@ -47,13 +48,15 @@ namespace MyFTPServer
             {
                 result.AppendFormat($" {directory} true");
             }
+
             foreach (var file in files)
             {
                 result.AppendFormat($" {file} false");
             }
-            await writer.WriteLineAsync(result.ToString());
+
+            await writer.WriteAsync(result.ToString());
         }
-        
+
         /// <summary>
         /// Executes "Get" command
         /// </summary>
@@ -63,16 +66,20 @@ namespace MyFTPServer
         {
             if (!File.Exists(path))
             {
-                await writer.WriteLineAsync("-1");
+                await writer.WriteAsync("-1");
                 return;
             }
-            
+
             var size = new FileInfo(path).Length;
             await writer.WriteAsync($"{size} ");
             await using var fileStream = File.OpenRead(path);
             await fileStream.CopyToAsync(writer.BaseStream);
         }
         
+        /// <summary>
+        /// Listens client
+        /// </summary>
+        /// <param name="socket">Socket for listening clients</param>
         private static async Task Work(Socket socket)
         {
             using (socket)
@@ -99,11 +106,18 @@ namespace MyFTPServer
                     }
                 }
             }
+
             socket.Close();
         }
         
+        /// <summary>
+        /// Stops server
+        /// </summary>
         public void Stop() => _tokenSource.Cancel();
         
+        /// <summary>
+        /// Starts server
+        /// </summary>
         public async Task Start()
         {
             var listener = new TcpListener(_ip, _port);
@@ -115,6 +129,7 @@ namespace MyFTPServer
                 var client = Task.Run(() => Work(socket));
                 _clients.Add(client);
             }
+
             Task.WaitAll(_clients.ToArray());
         }
     }
