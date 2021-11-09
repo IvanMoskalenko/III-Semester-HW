@@ -17,12 +17,10 @@ namespace NetworkChat
         private NetworkStream _stream;
         private StreamWriter _writer;
         private StreamReader _reader;
-        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public Server(int port)
         {
             _listener = new TcpListener(IPAddress.Any, port);
-            _cancellationTokenSource = new CancellationTokenSource();
         }
         
         /// <summary>
@@ -55,8 +53,7 @@ namespace NetworkChat
                         Console.WriteLine(received);
                         received = await _reader.ReadLineAsync();
                     }
-
-                    _cancellationTokenSource.Cancel();
+                    
                     _listener.Stop();
                     Environment.Exit(0);
                 }
@@ -80,7 +77,6 @@ namespace NetworkChat
                         tasks.Add(_writer.WriteLineAsync(message));
                         message = Console.ReadLine();
                     }
-
                     Task.WaitAll(tasks.ToArray());
                     _listener.Stop();
                     Environment.Exit(0);
