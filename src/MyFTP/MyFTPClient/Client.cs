@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MyFTPClient
@@ -8,50 +10,62 @@ namespace MyFTPClient
     /// <summary>
     /// Implementation of client
     /// </summary>
-    public static class Client
+    public class Client
     {
-        /// <summary>
-        /// Sends request to server and gets response
-        /// </summary>
-        /// <param name="command">Command to server. Can be "1" or "2"</param>
-        /// <param name="path">Path to file or directory</param>
-        /// <param name="ip">Server IP</param>
-        /// <param name="port">Server port</param>
-        /// <param name="pathToSave">Path to save file if command == "2"</param>
-        /// <returns>Response from server</returns>
-        /// <exception cref="DirectoryNotFoundException">Raises if directory doesn't exist on server</exception>
-        /// <exception cref="FileNotFoundException">Raises if file doesn't exist on server</exception>
-        public static async Task<string> Run(string command, string path, string ip, int port, string pathToSave = "")
+        private readonly string _ip;
+        private readonly int _port;
+
+        public Client(string ip, int port)
         {
-            using var client = new TcpClient(ip, port);
-            var stream = client.GetStream();
-            var writer = new StreamWriter(stream);
-            await writer.WriteLineAsync(command + " " + path);
-            await writer.FlushAsync();
-            var reader = new StreamReader(stream);
-            switch (command)
-            {
-                case "1":
-                    var data = await reader.ReadToEndAsync();
-                    if (data == "-1")
-                    {
-                        throw new DirectoryNotFoundException();
-                    }
-
-                    return data;
-                case "2":
-                    var size = await reader.ReadLineAsync();
-                    if (size == "-1")
-                    {
-                        throw new FileNotFoundException();
-                    }
-
-                    var content = await reader.ReadToEndAsync();
-                    await File.WriteAllBytesAsync(pathToSave, Convert.FromBase64String(content));
-                    return size;
-                default:
-                    return "Incorrect command";
-            }
+            _ip = ip;
+            _port = port;
         }
+
+        public async Task<List<(string, bool)>> List(string command, string path)
+        {
+            using var client = new TcpClient();
+            await client.ConnectAsync(_ip, _port);
+            var stream = client.GetStream();
+            var writer = new StreamWriter(stream) { AutoFlush = true };
+            await writer.WriteLineAsync(command + " " + path);
+            var reader = new StreamReader(stream);
+            var data = await reader.ReadToEndAsync();
+            if (data == "-1")
+            {
+                throw new DirectoryNotFoundException();
+            }
+            var splitData = data.Split(' ');
+            var result = new List<(string, bool)>();
+            for (var i = 1; i < splitData.Length; i += 2)
+            {
+                result.Add((splitData[i], Convert.ToBoolean(splitData[i + 1])));
+            }
+
+            return result;
+        }
+        
+        public async Task<int> Get(string command, string path, string pathToSave)
+        {
+            using var client = new TcpClient();
+            await client.ConnectAsync(_ip, _port);
+            var stream = client.GetStream();
+            var writer = new StreamWriter(stream) { AutoFlush = true };
+            await writer.WriteLineAsync(command + " " + path);
+            var reader = new StreamReader(stream);
+            var size = new StringBuilder();
+            while (reader.Peek() != ' ')
+            {
+                if (reader.Peek() == '-')
+                {
+                    throw new FileNotFoundException();
+                }
+                size.Append((char)reader.Read());
+            }
+            reader.Read();
+            await using var fileStream = File.Create(pathToSave);
+            await stream.CopyToAsync(fileStream);
+            return Convert.ToInt32(size.ToString());
+        }
+        
     }
 }

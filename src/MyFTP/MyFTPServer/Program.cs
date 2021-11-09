@@ -14,9 +14,11 @@ namespace MyFTPServer
                 return;
             }
 
+            var server = new Server(IPAddress.Parse(args[0]), Convert.ToInt32(args[1])); 
+            
             try
             {
-                await Server.Start(IPAddress.Parse(args[0]), Convert.ToInt32(args[1]));
+                await server.Start();
             }
             catch (FormatException)
             {

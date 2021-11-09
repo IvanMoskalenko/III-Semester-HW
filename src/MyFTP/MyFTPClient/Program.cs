@@ -28,16 +28,22 @@ namespace MyFTPClient
                 return;
             }
 
+            var client = new Client(ip, port);
+
             switch (args[0])
             {
                 case "1":
-                    var response = await Client.Run("1", args[1], ip, port);
-                    Console.WriteLine(response);
+                    var response = await client.List("1", args[1]);
+                    Console.WriteLine(response.Count);
+                    foreach (var (path, isDir) in response)
+                    {
+                        Console.WriteLine($"{path} {isDir}");
+                    }
                     break;
                 case "2":
                     Console.WriteLine("Enter path to save file: ");
                     var pathToSave = Console.ReadLine();
-                    var size = await Client.Run("2", args[1], ip, port, pathToSave);
+                    var size = await client.Get("2", args[1], pathToSave);
                     Console.WriteLine(size);
                     break;
                 default:
