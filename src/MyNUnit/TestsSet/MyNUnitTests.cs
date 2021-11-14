@@ -19,13 +19,13 @@ namespace TestsSet
         [Test]
         public void PassingTest()
         {
-            Thread.Sleep(300);
+            Thread.Sleep(900);
         }
 
         [Test(Expected = typeof(ArgumentOutOfRangeException))]
         public void ExceptionTest()
         {
-            Thread.Sleep(200);
+            Thread.Sleep(600);
             throw new ArgumentOutOfRangeException();
         }
 
@@ -37,7 +37,7 @@ namespace TestsSet
         [Test]
         public void FallingTest()
         {
-            Thread.Sleep(100);
+            Thread.Sleep(300);
             throw new Exception();
         }
 

@@ -11,7 +11,7 @@ namespace MyNUnit.Tests
         {
             Assert.AreEqual(_info[3].Result, "Passed");
             Assert.AreEqual(_info[3].IgnoreReason, null);
-            Assert.True(_info[3].Time >= 300);
+            Assert.True(_info[3].Time >= 900);
         }
 
         [Test]
@@ -19,7 +19,7 @@ namespace MyNUnit.Tests
         {
             Assert.AreEqual(_info[2].Result, "Passed");
             Assert.AreEqual(_info[2].IgnoreReason, null);
-            Assert.True(_info[2].Time >= 200);
+            Assert.True(_info[2].Time >= 600);
         }
 
         [Test]
@@ -34,7 +34,7 @@ namespace MyNUnit.Tests
         {
             Assert.AreEqual(_info[1].Result, "Failed");
             Assert.AreEqual(_info[1].IgnoreReason, null);
-            Assert.True(_info[3].Time >= 100);
+            Assert.True(_info[3].Time >= 300);
         }
     }
 }
