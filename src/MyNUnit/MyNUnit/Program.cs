@@ -7,6 +7,10 @@ namespace MyNUnit
     {
         private static void Main(string[] args)
         {
+            if (args.Length != 1)
+            {
+                Console.WriteLine("Wrong number of arguments. Please, specify only path to directory");
+            }
             if (!Directory.Exists(args[0]))
             {
                 Console.WriteLine("Specified directory doesn't exist");
