@@ -29,7 +29,7 @@ namespace TestsSet
             throw new ArgumentOutOfRangeException();
         }
 
-        [Test(Ignore = "This test is empty and must be ignore")]
+        [Test(Ignore = "This test is empty and must be ignored")]
         public void IgnoredTest()
         {
         }

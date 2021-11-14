@@ -1,5 +1,8 @@
 namespace MyNUnit
 {
+    /// <summary>
+    /// Implementation of information about executed tests
+    /// </summary>
     public class TestInformation
     {
         public string Name { get; }

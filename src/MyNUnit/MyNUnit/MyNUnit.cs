@@ -10,6 +10,9 @@ using Attributes;
 
 namespace MyNUnit
 {
+    /// <summary>
+    /// Implementation of simple test framework
+    /// </summary>
     public class MyNUnit
     {
         private MethodsLists _methods;
@@ -40,7 +43,11 @@ namespace MyNUnit
             TestsInformation = new ConcurrentQueue<TestInformation>();
             Parallel.ForEach(classesWithTests, StartTests);
         }
-
+        
+        /// <summary>
+        /// Starts tests executing for one class
+        /// </summary>
+        /// <param name="classWithTests">Class to start tests</param>
         private void StartTests(Type classWithTests)
         {
             DivideMethodsByAttributes(classWithTests);
@@ -50,7 +57,12 @@ namespace MyNUnit
 
             TestAfterOrBeforeClass(_methods.AfterClass);
         }
-
+        
+        /// <summary>
+        /// Runs one test
+        /// </summary>
+        /// <param name="type">Class where test is located</param>
+        /// <param name="method">Method representing test</param>
         private void RunTest(Type type, MethodBase method)
         {
             var property = (Test) Attribute.GetCustomAttribute(method, typeof(Test));
@@ -102,6 +114,12 @@ namespace MyNUnit
             }
         }
         
+        /// <summary>
+        /// Runs methods before all tests
+        /// </summary>
+        /// <param name="afterOrBeforeClassMethods">List of methods to run</param>
+        /// <exception cref="InvalidOperationException">One of methods is not static</exception>
+        /// <exception cref="AggregateException">Exception occured while running one of methods</exception>
         private static void TestAfterOrBeforeClass(List<MethodInfo> afterOrBeforeClassMethods)
         {
             foreach (var method in afterOrBeforeClassMethods)
@@ -121,6 +139,11 @@ namespace MyNUnit
             }
         }
         
+        /// <summary>
+        /// Runs before every test
+        /// </summary>
+        /// <param name="type">Class where test is located</param>
+        /// <param name="methods">List of methods to run</param>
         private static void TestAfterOrBefore(Type type, List<MethodInfo> methods)
         {
             var instance = Activator.CreateInstance(type);
@@ -130,6 +153,10 @@ namespace MyNUnit
             }
         }    
         
+        /// <summary>
+        /// Divides all methods in class by attributes
+        /// </summary>
+        /// <param name="classWithTests">Class where division must be executed</param>
         private void DivideMethodsByAttributes(Type classWithTests)
         {
             _methods = new MethodsLists();

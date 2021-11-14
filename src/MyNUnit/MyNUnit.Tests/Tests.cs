@@ -36,7 +36,7 @@ namespace MyNUnit.Tests
         {
             var testInfo = _testsInfo["IgnoredTest"];
             Assert.AreEqual(testInfo.Result, "Ignored");
-            Assert.AreEqual(testInfo.IgnoreReason, "This test is empty and must be ignore");
+            Assert.AreEqual(testInfo.IgnoreReason, "This test is empty and must be ignored");
         }
 
         [Test]

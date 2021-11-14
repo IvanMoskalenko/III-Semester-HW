@@ -3,6 +3,9 @@ using System.Reflection;
 
 namespace MyNUnit
 {
+    /// <summary>
+    /// Implementation of lists of methods for every attribute
+    /// </summary>
     public class MethodsLists
     {
         public List<MethodInfo> After { get; } = new();
