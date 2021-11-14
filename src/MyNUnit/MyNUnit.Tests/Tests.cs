@@ -1,40 +1,51 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 
 namespace MyNUnit.Tests
 {
     public class Tests
     {
-        private readonly TestInformation[] _info = new MyNUnit("../../../../TestsSet").TestsInformation.ToArray();
+        private static readonly ConcurrentQueue<TestInformation> Info =
+            new MyNUnit("../../../../TestsSet").TestsInformation;
+
+        private readonly Dictionary<string, TestInformation> _testsInfo =
+            Info.ToDictionary(testInfo => testInfo.Name);
 
         [Test]
         public void PassingTestsShouldPass()
         {
-            Assert.AreEqual(_info[3].Result, "Passed");
-            Assert.AreEqual(_info[3].IgnoreReason, null);
-            Assert.True(_info[3].Time >= 900);
+            var testInfo = _testsInfo["PassingTest"];
+            Assert.AreEqual(testInfo.Result, "Passed");
+            Assert.AreEqual(testInfo.IgnoreReason, null);
+            Assert.True(testInfo.Time >= 900);
         }
 
         [Test]
         public void TestWithExceptionShouldWorkCorrectly()
         {
-            Assert.AreEqual(_info[2].Result, "Passed");
-            Assert.AreEqual(_info[2].IgnoreReason, null);
-            Assert.True(_info[2].Time >= 600);
+            var testInfo = _testsInfo["ExceptionTest"];
+            Assert.AreEqual(testInfo.Result, "Passed");
+            Assert.AreEqual(testInfo.IgnoreReason, null);
+            Assert.True(testInfo.Time >= 600);
         }
 
         [Test]
         public void TestWithIgnoreShouldWorkCorrectly()
         {
-            Assert.AreEqual(_info[0].Result, "Ignored");
-            Assert.AreEqual(_info[0].IgnoreReason, "This test is empty and must be ignore");
+            var testInfo = _testsInfo["IgnoredTest"];
+            Assert.AreEqual(testInfo.Result, "Ignored");
+            Assert.AreEqual(testInfo.IgnoreReason, "This test is empty and must be ignore");
         }
 
         [Test]
         public void FallingTestShouldFall()
         {
-            Assert.AreEqual(_info[1].Result, "Failed");
-            Assert.AreEqual(_info[1].IgnoreReason, null);
-            Assert.True(_info[3].Time >= 300);
+            var testInfo = _testsInfo["FallingTest"];
+            Assert.AreEqual(testInfo.Result, "Failed");
+            Assert.AreEqual(testInfo.IgnoreReason, null);
+            Assert.True(testInfo.Time >= 300);
         }
     }
 }
