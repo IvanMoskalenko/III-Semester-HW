@@ -115,7 +115,7 @@ namespace MyNUnit
         }
         
         /// <summary>
-        /// Runs methods before all tests
+        /// Runs methods before or after all tests
         /// </summary>
         /// <param name="afterOrBeforeClassMethods">List of methods to run</param>
         /// <exception cref="InvalidOperationException">One of methods is not static</exception>
@@ -140,7 +140,7 @@ namespace MyNUnit
         }
         
         /// <summary>
-        /// Runs before every test
+        /// Runs before or after every test
         /// </summary>
         /// <param name="type">Class where test is located</param>
         /// <param name="methods">List of methods to run</param>
