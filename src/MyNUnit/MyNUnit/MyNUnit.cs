@@ -31,6 +31,7 @@ namespace MyNUnit
                 }
             }
             var classes = notRepeatingFiles.Keys
+                .AsParallel()
                 .Select(Assembly.LoadFrom)
                 .SelectMany(assembly => assembly.ExportedTypes)
                 .Where(type => type.IsClass);
