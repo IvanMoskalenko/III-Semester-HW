@@ -10,6 +10,7 @@ namespace MyNUnit
             if (args.Length != 1)
             {
                 Console.WriteLine("Wrong number of arguments. Please, specify only path to directory");
+                return;
             }
             if (!Directory.Exists(args[0]))
             {
@@ -29,7 +30,7 @@ namespace MyNUnit
             }
             catch (AggregateException)
             {
-                Console.WriteLine($"Error was occured in BeforeClass or AfterClass");
+                Console.WriteLine("Error was occured in BeforeClass or AfterClass");
             }
             catch (InvalidOperationException e)
             {

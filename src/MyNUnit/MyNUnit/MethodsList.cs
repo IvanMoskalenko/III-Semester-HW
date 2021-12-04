@@ -1,12 +1,13 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace MyNUnit
 {
     /// <summary>
-    /// Implementation of lists of methods for every attribute
+    /// Implementation of concurrent bags of methods for every attribute
     /// </summary>
-    public class MethodsLists
+    public class MethodsList
     {
         public List<MethodInfo> After { get; } = new();
         public List<MethodInfo> AfterClass { get; } = new();
