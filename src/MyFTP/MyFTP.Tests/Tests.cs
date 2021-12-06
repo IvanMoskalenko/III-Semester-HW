@@ -23,6 +23,7 @@ namespace MyFTP.Tests
         }
 
         [Test]
+        [Ignore("Ignore a test")]
         public async Task ListShouldReturnRightSizeAndItems()
         {
             var actual = await _client.List(_path);
@@ -40,6 +41,7 @@ namespace MyFTP.Tests
         }
 
         [Test]
+        [Ignore("Ignore a test")]
         public async Task GetShouldReturnRightSizeAndDownloadFile()
         {
             var filePath = Path.Join(_path, "test1.txt");
