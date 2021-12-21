@@ -1,0 +1,6 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=67bf3d98_002D6e60_002D450d_002Dba80_002Df44eb13a6a41/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="LazyAndConcurrentLazyShouldThrowExceptionWhenSupplierIsNull" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;NUnit3x::3326B3D9-1F1D-40EA-B5D6-CCE3C523327D::net5.0::Lazy.Tests.Tests.LazyAndConcurrentLazyShouldThrowExceptionWhenSupplierIsNull&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
